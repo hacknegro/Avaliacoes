@@ -5,7 +5,7 @@
 # para a determinação da lista ordenada de atribuição de RVD's
 #
 __author__ = 'Alexandre Carlos'
-
+__version__ = "0.1"
 
 class Worker(object):
     """
@@ -32,9 +32,9 @@ class Consolidation(object):
     """
 
     def __init__(self):
-        self.workerExcelFile = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\Avaliação\António Simões.xls"
+        self.worker_excel_file = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\Avaliação\António Simões.xls"
         self.worker = "António Simões"
-        self.globalAssessmentExcelFile = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\Avaliação\AvaliaçõesGlobais.xls"
+        self.global_assessment_excel_file = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\Avaliação\AvaliaçõesGlobais.xls"
         self.workers = ()
 
     def get_workers(self):
