@@ -9,7 +9,7 @@ import sys
 from pt.bportugal.Avaliacoes.Consolidation import Consolidation
 
 __author__ = 'Alexandre Carlos'
-__version__ = "0.1"
+__version__ = "1.0"
 
 if __name__ == '__main__':
     consolidation = Consolidation()

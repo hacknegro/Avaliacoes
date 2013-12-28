@@ -5,7 +5,7 @@
 # para a determinação da lista ordenada de atribuição de RVD's
 #
 __author__ = 'Alexandre Carlos'
-__version__ = "0.1"
+__version__ = "1.0"
 
 from xlrd import open_workbook
 from xlwt import Workbook
@@ -45,16 +45,50 @@ class Worker(object):
         return self.evaluation
 
 
+class GlobalAssessment (object):
+
+    first_row = 0
+
+    first_column = 0
+    second_column = 1
+
+    def __init__(self, global_assessment_filename):
+        self.global_wb = Workbook(encoding='utf-8')
+        self.worker_index = 1
+        self.global_assessment_filename = global_assessment_filename
+        self.global_assessment_sheet = self.global_wb.add_sheet(u"Avaliação Global")
+
+        self.global_assessment_sheet.write(self.first_row, self.first_column, u"Avaliado")
+        self.global_assessment_sheet.write(self.first_row, self.second_column, u"Avaliação")
+
+        self.global_assessment_sheet.col(self.first_column).width = 256*20
+        self.global_assessment_sheet.col(self.second_column).width = 256*10
+
+    def new_assessment(self, worker):
+
+        self.global_assessment_sheet.write(self.worker_index, self.first_column, worker.get_name())
+        self.global_assessment_sheet.write(self.worker_index, self.second_column, worker.get_assessment())
+
+        self.worker_index += 1
+
+    def save_assessment(self):
+        self.global_wb.save(self.global_assessment_filename)
+
+
 class WorkerEvaluation(object):
     """
 
     """
 
     def __init__(self, exel_file):
+
         self.worker_file = exel_file
 
     def get_evaluation(self):
+        """
 
+        @rtype : float
+        """
         wb = open_workbook(self.worker_file)
 
         sheet = wb.sheet_by_name(u"Avaliação Global")
@@ -72,7 +106,8 @@ class Consolidation(object):
 
         self.config = ConfigSetup()
         self.workers = []
-        self.global_wb = Workbook(encoding='utf-8')
+        self.global_assessment = GlobalAssessment(self.config.global_assessment_excel_file)
+
 
     def get_workers(self):
 
@@ -81,6 +116,11 @@ class Consolidation(object):
             self.workers.append(base)
 
     def handle_worker(self, worker_index):
+        """
+
+        @rtype : Worker
+        """
+
         worker = Worker(self.workers[worker_index])
 
         wk = WorkerEvaluation(os.path.join(self.config.worker_file_path, self.config.file_workers[worker_index]))
@@ -88,20 +128,6 @@ class Consolidation(object):
         worker.put_assessment(wk.get_evaluation())
 
         return worker
-
-    def save_assessment(self, worker):
-
-        worker_name = worker.get_name()
-
-        print(worker_name)
-
-        sheet2 = self.global_wb.add_sheet(u"Avaliação Global")
-        sheet2.write(0,0,worker_name)
-        sheet2.write(1,0,worker.get_assessment())
-
-        self.global_wb.save(self.global_assessment_excel_file)
-
-        return 10
 
     def do_consolidation(self):
         """
@@ -112,6 +138,9 @@ class Consolidation(object):
 
         for i in range(len(self.config.file_workers)):
             worker = self.handle_worker(i)
+            self.global_assessment.new_assessment(worker)
+
+        self.global_assessment.save_assessment()
 
         return
         # return self.save_assessment(worker)

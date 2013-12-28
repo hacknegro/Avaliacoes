@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 __author__ = 'Alexandre Carlos'
+__version__ = "1.0"
 
 import unittest
 from pt.bportugal.Avaliacoes.Consolidation import *
@@ -35,10 +36,6 @@ class ConsolidationTestCase(unittest.TestCase):
 
         self.assertEqual(self.consolidation.workers, self.reference_workers)
 
-    # def test_worker_evaluation (self):
-    #     evaluation = self.we.get_evaluation()
-    #     self.assertEqual(5.500, evaluation)
-
     def test_handle_single_worker(self):
         self.consolidation.get_workers()
         wk = self.consolidation.handle_worker(0)
@@ -54,6 +51,19 @@ class ConsolidationTestCase(unittest.TestCase):
 
             self.assertEqual(wk.get_name(), self.reference_workers[i])
             self.assertEqual(wk.get_assessment(), self.reference_workers_values[i])
+
+    def test_global_assessment(self):
+        self.consolidation.get_workers()
+
+        self.assertEqual(self.consolidation.global_assessment.worker_index, 1)
+
+        wk = self.consolidation.handle_worker(0)
+        self.consolidation.global_assessment.new_assessment(wk)
+        self.assertEqual(self.consolidation.global_assessment.worker_index, 2)
+
+        wk = self.consolidation.handle_worker(1)
+        self.consolidation.global_assessment.new_assessment(wk)
+        self.assertEqual(self.consolidation.global_assessment.worker_index, 3)
 
 
 if __name__ == '__main__':
