@@ -9,6 +9,22 @@ __version__ = "0.1"
 
 from xlrd import open_workbook
 from xlwt import Workbook
+import os
+
+
+class ConfigSetup (object):
+
+    def __init__(self):
+        # self.worker_file_path = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\Avaliação"
+        # self.global_assessment_excel_file = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\" +\
+        #                                     "Avaliação\AvaliaçõesGlobais.xls"
+
+        self.worker_file_path = r"/home/alexandre/Documentos/Dropbox/Gestão/Pessoal/Avaliações 2013/Avaliação"
+        self.global_assessment_excel_file = r"/home/alexandre/Documentos/Dropbox/Gestão/Pessoal/Avaliações 2013/" +\
+                                            r"Avaliação/AvaliaçõesGlobais.xls"
+        self.file_workers = ("António Simões.xls", "Cristina Coelho.xls", "João Carlos.xls", "José Augusto.xls",
+                             "Luís Rio.xls", "Maria da Graça.xls", "Maria da Luz.xls", "Maria João.xls")
+
 
 class Worker(object):
     """
@@ -28,6 +44,7 @@ class Worker(object):
     def get_assessment(self):
         return self.evaluation
 
+
 class WorkerEvaluation(object):
     """
 
@@ -36,7 +53,7 @@ class WorkerEvaluation(object):
     def __init__(self, exel_file):
         self.worker_file = exel_file
 
-    def getEvaluation(self):
+    def get_evaluation(self):
 
         wb = open_workbook(self.worker_file)
 
@@ -52,23 +69,23 @@ class Consolidation(object):
     """
 
     def __init__(self):
-        # self.worker_excel_file = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\Avaliação\António Simões.xls"
-        self.worker_excel_file = r"/home/alexandre/Documentos/Dropbox/Gestão/Pessoal/Avaliações 2013/Avaliação/António Simões.xls"
-        self.worker = "António Simões"
-        # self.global_assessment_excel_file = r"C:\Users\KKU035\Documents\Dropbox\Gestão\Pessoal\Avaliações 2013\Avaliação\AvaliaçõesGlobais.xls"
-        self.global_assessment_excel_file = r"/home/alexandre/Documentos/Dropbox/Gestão/Pessoal/Avaliações 2013/Avaliação/AvaliaçõesGlobais.xls"
-        self.workers = ()
+
+        self.config = ConfigSetup()
+        self.workers = []
         self.global_wb = Workbook(encoding='utf-8')
 
     def get_workers(self):
-        self.workers = ("António Simões",)
 
-    def handle_worker(self, nome):
-        worker = Worker(nome)
+        for worker_file in self.config.file_workers:
+            base, ext = os.path.splitext(worker_file)
+            self.workers.append(base)
 
-        wk = WorkerEvaluation(self.worker_excel_file)
+    def handle_worker(self, worker_index):
+        worker = Worker(self.workers[worker_index])
 
-        worker.put_assessment(wk.getEvaluation())
+        wk = WorkerEvaluation(os.path.join(self.config.worker_file_path, self.config.file_workers[worker_index]))
+
+        worker.put_assessment(wk.get_evaluation())
 
         return worker
 
@@ -93,6 +110,8 @@ class Consolidation(object):
         """
         self.get_workers()
 
-        worker = self.handle_worker(self.workers[0])
+        for i in range(len(self.config.file_workers)):
+            worker = self.handle_worker(i)
 
-        return self.save_assessment(worker)
+        return
+        # return self.save_assessment(worker)
